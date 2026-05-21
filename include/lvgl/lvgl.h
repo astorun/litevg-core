@@ -76,6 +76,7 @@
 #include "draw/lv_draw_rect.h"
 #include "draw/lv_draw_triangle.h"
 #include "draw/lv_draw_vector.h"
+#include "draw/lv_dither.h"
 #include "draw/lv_grad.h"
 #include "draw/lv_image_dsc.h"
 #include "draw/lv_palette.h"

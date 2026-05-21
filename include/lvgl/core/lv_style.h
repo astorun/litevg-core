@@ -211,6 +211,7 @@ enum _lv_style_id_t {
     LV_STYLE_BG_GRAD_COLOR,
     LV_STYLE_BG_MAIN_STOP,
     LV_STYLE_BG_GRAD_STOP,
+    LV_STYLE_BG_DITHER,
 
     /*Bg image*/
     LV_STYLE_BG_IMAGE_SRC = 48,
@@ -286,6 +287,7 @@ enum _lv_style_id_t {
     LV_STYLE_BLEND_MODE,
     LV_STYLE_ROTARY_SENSITIVITY,
     LV_STYLE_TRANSLATE_RADIAL,
+    LV_STYLE_SHADOW_DITHER,
 
     /*Requested a lot but rarely used*/
     LV_STYLE_CLIP_CORNER = 128,
@@ -298,6 +300,7 @@ enum _lv_style_id_t {
     LV_STYLE_BLUR_RADIUS = 136,
     LV_STYLE_BLUR_BACKDROP,
     LV_STYLE_BLUR_QUALITY,
+    LV_STYLE_BLUR_DITHER,
 
     /*Drop shadow*/
     LV_STYLE_DROP_SHADOW_RADIUS = 144,
@@ -306,6 +309,7 @@ enum _lv_style_id_t {
     LV_STYLE_DROP_SHADOW_COLOR,
     LV_STYLE_DROP_SHADOW_OPA,
     LV_STYLE_DROP_SHADOW_QUALITY,
+    LV_STYLE_DROP_SHADOW_DITHER,
 
     /*Scale and transform*/
     LV_STYLE_TRANSFORM_SCALE_X = 152,

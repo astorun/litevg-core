@@ -35,7 +35,7 @@ github-repos/
 
 ## Current Native Dither Work
 
-The current local working tree contains the first native software-renderer dither implementation pass:
+`main` contains the first native software-renderer dither implementation pass:
 
 - Shared `lv_dither_dsc_t` descriptor and `LV_USE_DITHER` config.
 - Descriptor fields wired into gradients, normal shadow, drop shadow, and blur paths.

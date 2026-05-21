@@ -26,6 +26,7 @@ extern "C" {
 #include "../core/lv_matrix.h"
 #include "../core/lv_event.h"
 #include "lv_draw_buf.h"
+#include "lv_dither.h"
 
 /*********************
  *      DEFINES
@@ -180,6 +181,9 @@ typedef struct {
 
     /**Drop shadow blur quality*/
     lv_blur_quality_t drop_shadow_quality : 3;
+
+    /**Drop shadow dither descriptor*/
+    lv_dither_dsc_t drop_shadow_dither;
 
     /**Size of the specific draw descriptor into which this base descriptor is embedded*/
     size_t dsc_size;

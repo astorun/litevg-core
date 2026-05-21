@@ -14,6 +14,7 @@
 #if LV_USE_DRAW_SW
 
 #include "../../core/lv_refr_private.h"
+#include "lv_draw_sw_dither.h"
 
 /*********************
  *      DEFINES
@@ -355,6 +356,10 @@ void lv_draw_sw_blur(lv_draw_task_t * t, const lv_draw_blur_dsc_t * dsc, const l
 
         }
     }
+
+    lv_area_t dither_origin = *coords;
+    lv_area_move(&dither_origin, -layer_x_ofs, -layer_y_ofs);
+    lv_draw_sw_dither_buf_area(&dsc->dither, t->target_layer->draw_buf, &clipped_coords, &dither_origin);
 
     LV_PROFILER_DRAW_END;
 }

@@ -229,6 +229,7 @@ void lv_draw_rect(lv_layer_t * layer, const lv_draw_rect_dsc_t * dsc, const lv_a
         shadow_dsc->ofs_x = dsc->shadow_offset_x;
         shadow_dsc->ofs_y = dsc->shadow_offset_y;
         shadow_dsc->bg_cover = bg_cover;
+        shadow_dsc->dither = dsc->shadow_dither;
         lv_draw_finalize_task_creation(layer, t);
     }
 

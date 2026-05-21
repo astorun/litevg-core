@@ -232,6 +232,9 @@
 
 #endif
 
+/** Enable LiteVG Designer dither descriptors and software-renderer dither hooks. */
+#define LV_USE_DITHER 1
+
 /*Use TSi's aka (Think Silicon) NemaGFX */
 #define LV_USE_NEMA_GFX 0
 

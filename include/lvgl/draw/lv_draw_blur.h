@@ -45,6 +45,11 @@ typedef struct {
      */
     lv_blur_quality_t quality;
 
+    /**
+     * Dither the blurred pixels after blur processing.
+     */
+    lv_dither_dsc_t dither;
+
 } lv_draw_blur_dsc_t;
 
 /**********************

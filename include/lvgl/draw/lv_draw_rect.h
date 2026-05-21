@@ -72,6 +72,7 @@ typedef struct {
     int32_t shadow_offset_x;
     int32_t shadow_offset_y;
     int32_t shadow_spread;
+    lv_dither_dsc_t shadow_dither;
 } lv_draw_rect_dsc_t;
 
 typedef struct {
@@ -144,6 +145,9 @@ typedef struct {
     /**Set `bg_cover` to 1 if the background will cover the shadow.
      * It's a hint to the renderer about it might skip some masking.*/
     uint8_t bg_cover    : 1;
+
+    /**Dither the generated shadow mask before blending.*/
+    lv_dither_dsc_t dither;
 } lv_draw_box_shadow_dsc_t;
 
 /**********************

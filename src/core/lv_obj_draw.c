@@ -87,6 +87,10 @@ void lv_obj_init_draw_rect_dsc(lv_obj_t * obj, lv_part_t part, lv_draw_rect_dsc_
                     draw_dsc->bg_grad.stops[1].opa = lv_obj_get_style_bg_grad_opa(obj, part);
                 }
             }
+            const lv_dither_dsc_t * bg_dither = lv_obj_get_style_bg_dither(obj, part);
+            if(bg_dither && lv_dither_dsc_is_enabled(bg_dither)) {
+                draw_dsc->bg_grad.dither = *bg_dither;
+            }
         }
     }
 
@@ -149,6 +153,10 @@ void lv_obj_init_draw_rect_dsc(lv_obj_t * obj, lv_part_t part, lv_draw_rect_dsc_
                     draw_dsc->shadow_spread = lv_obj_get_style_shadow_spread(obj, part);
                     lv_color_t shadow_color = lv_obj_get_style_shadow_color_filtered(obj, part);
                     draw_dsc->shadow_color = normal_apply_layer_recolor(obj, part, &draw_dsc->base, shadow_color);
+                    const lv_dither_dsc_t * shadow_dither = lv_obj_get_style_shadow_dither(obj, part);
+                    if(shadow_dither && lv_dither_dsc_is_enabled(shadow_dither)) {
+                        draw_dsc->shadow_dither = *shadow_dither;
+                    }
                 }
             }
         }
@@ -349,6 +357,10 @@ void lv_obj_init_draw_blur_dsc(lv_obj_t * obj, lv_part_t part, lv_draw_blur_dsc_
 
     draw_dsc->blur_radius = lv_obj_get_style_blur_radius(obj, part);
     draw_dsc->quality = lv_obj_get_style_blur_quality(obj, part);
+    const lv_dither_dsc_t * blur_dither = lv_obj_get_style_blur_dither(obj, part);
+    if(blur_dither && lv_dither_dsc_is_enabled(blur_dither)) {
+        draw_dsc->dither = *blur_dither;
+    }
 
     /*Radius might be set earlier as it's already known*/
     if(draw_dsc->corner_radius == 0) {
@@ -523,5 +535,9 @@ static void drop_shadow_init(const lv_obj_t * obj, lv_part_t part, lv_draw_dsc_b
         base_dsc->drop_shadow_color = normal_apply_layer_recolor(obj, part, base_dsc, base_dsc->drop_shadow_color);
 
         base_dsc->drop_shadow_quality = lv_obj_get_style_drop_shadow_quality(obj, part);
+        const lv_dither_dsc_t * drop_shadow_dither = lv_obj_get_style_drop_shadow_dither(obj, part);
+        if(drop_shadow_dither && lv_dither_dsc_is_enabled(drop_shadow_dither)) {
+            base_dsc->drop_shadow_dither = *drop_shadow_dither;
+        }
     }
 }

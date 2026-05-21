@@ -13,6 +13,7 @@
 #if LV_USE_DRAW_SW
 
 #include "blend/lv_draw_sw_blend_private.h"
+#include "lv_draw_sw_dither.h"
 #include "lv_draw_sw_grad.h"
 #include "../../misc/lv_text_ap.h"
 
@@ -101,6 +102,8 @@ void lv_draw_sw_fill(lv_draw_task_t * t, lv_draw_fill_dsc_t * dsc, const lv_area
     /*Get gradient if appropriate*/
     lv_draw_sw_grad_calc_t * grad = lv_draw_sw_grad_get(&dsc->grad, coords_bg_w, coords_bg_h);
     lv_opa_t * grad_opa_map = NULL;
+    bool dither = lv_dither_dsc_is_enabled(&dsc->grad.dither);
+    lv_color_t * dither_color_buf = NULL;
     bool transp = false;
     if(grad && grad_dir >= LV_GRAD_DIR_HOR) {
         blend_dsc.src_area = &blend_area;
@@ -116,6 +119,12 @@ void lv_draw_sw_fill(lv_draw_task_t * t, lv_draw_fill_dsc_t * dsc, const lv_area
             if(transp) grad_opa_map = grad->opa_map + clipped_coords.x1 - bg_coords.x1;
         }
         blend_dsc.src_color_format = LV_COLOR_FORMAT_RGB888;
+    }
+    if(dither && grad_dir >= LV_GRAD_DIR_HOR) {
+        dither_color_buf = lv_malloc(clipped_w * sizeof(lv_color_t));
+        LV_ASSERT_MALLOC(dither_color_buf);
+        if(dither_color_buf == NULL) dither = false;
+        else blend_dsc.src_buf = dither_color_buf;
     }
 
 #if LV_USE_DRAW_SW_COMPLEX_GRADIENTS
@@ -172,18 +181,30 @@ void lv_draw_sw_fill(lv_draw_task_t * t, lv_draw_fill_dsc_t * dsc, const lv_area
                 case LV_GRAD_DIR_HOR:
                     hor_grad_processed = true;
                     preblend = grad_opa_map != NULL;
+                    if(dither) {
+                        lv_memcpy(dither_color_buf, grad->color_map + clipped_coords.x1 - bg_coords.x1,
+                                  clipped_w * sizeof(lv_color_t));
+                        lv_draw_sw_dither_color_line(&dsc->grad.dither, dither_color_buf,
+                                                     clipped_coords.x1 - bg_coords.x1, top_y - bg_coords.y1, clipped_w);
+                    }
                     break;
 #if LV_USE_DRAW_SW_COMPLEX_GRADIENTS
                 case LV_GRAD_DIR_LINEAR:
                     lv_draw_sw_grad_linear_get_line(&dsc->grad, clipped_coords.x1 - bg_coords.x1, top_y - bg_coords.y1, coords_bg_w, grad);
+                    if(dither) lv_draw_sw_dither_color_line(&dsc->grad.dither, grad->color_map,
+                                                            clipped_coords.x1 - bg_coords.x1, top_y - bg_coords.y1, clipped_w);
                     preblend = true;
                     break;
                 case LV_GRAD_DIR_RADIAL:
                     lv_draw_sw_grad_radial_get_line(&dsc->grad, clipped_coords.x1 - bg_coords.x1, top_y - bg_coords.y1, coords_bg_w, grad);
+                    if(dither) lv_draw_sw_dither_color_line(&dsc->grad.dither, grad->color_map,
+                                                            clipped_coords.x1 - bg_coords.x1, top_y - bg_coords.y1, clipped_w);
                     preblend = true;
                     break;
                 case LV_GRAD_DIR_CONICAL:
                     lv_draw_sw_grad_conical_get_line(&dsc->grad, clipped_coords.x1 - bg_coords.x1, top_y - bg_coords.y1, coords_bg_w, grad);
+                    if(dither) lv_draw_sw_dither_color_line(&dsc->grad.dither, grad->color_map,
+                                                            clipped_coords.x1 - bg_coords.x1, top_y - bg_coords.y1, clipped_w);
                     preblend = true;
                     break;
 #endif
@@ -213,21 +234,33 @@ void lv_draw_sw_fill(lv_draw_task_t * t, lv_draw_fill_dsc_t * dsc, const lv_area
                     break;
                 case LV_GRAD_DIR_HOR:
                     preblend = !hor_grad_processed && (grad_opa_map != NULL);
+                    if(dither) {
+                        lv_memcpy(dither_color_buf, grad->color_map + clipped_coords.x1 - bg_coords.x1,
+                                  clipped_w * sizeof(lv_color_t));
+                        lv_draw_sw_dither_color_line(&dsc->grad.dither, dither_color_buf,
+                                                     clipped_coords.x1 - bg_coords.x1, bottom_y - bg_coords.y1, clipped_w);
+                    }
                     break;
 #if LV_USE_DRAW_SW_COMPLEX_GRADIENTS
                 case LV_GRAD_DIR_LINEAR:
                     lv_draw_sw_grad_linear_get_line(&dsc->grad, clipped_coords.x1 - bg_coords.x1, bottom_y - bg_coords.y1, coords_bg_w,
                                                     grad);
+                    if(dither) lv_draw_sw_dither_color_line(&dsc->grad.dither, grad->color_map,
+                                                            clipped_coords.x1 - bg_coords.x1, bottom_y - bg_coords.y1, clipped_w);
                     preblend = true;
                     break;
                 case LV_GRAD_DIR_RADIAL:
                     lv_draw_sw_grad_radial_get_line(&dsc->grad, clipped_coords.x1 - bg_coords.x1, bottom_y - bg_coords.y1, coords_bg_w,
                                                     grad);
+                    if(dither) lv_draw_sw_dither_color_line(&dsc->grad.dither, grad->color_map,
+                                                            clipped_coords.x1 - bg_coords.x1, bottom_y - bg_coords.y1, clipped_w);
                     preblend = true;
                     break;
                 case LV_GRAD_DIR_CONICAL:
                     lv_draw_sw_grad_conical_get_line(&dsc->grad, clipped_coords.x1 - bg_coords.x1, bottom_y - bg_coords.y1, coords_bg_w,
                                                      grad);
+                    if(dither) lv_draw_sw_dither_color_line(&dsc->grad.dither, grad->color_map,
+                                                            clipped_coords.x1 - bg_coords.x1, bottom_y - bg_coords.y1, clipped_w);
                     preblend = true;
                     break;
 #endif
@@ -296,15 +329,29 @@ void lv_draw_sw_fill(lv_draw_task_t * t, lv_draw_fill_dsc_t * dsc, const lv_area
                     if(opa >= LV_OPA_MAX) blend_dsc.opa = grad->opa_map[h - bg_coords.y1];
                     else blend_dsc.opa = LV_OPA_MIX2(grad->opa_map[h - bg_coords.y1], opa);
                     break;
+                case LV_GRAD_DIR_HOR:
+                    if(dither) {
+                        lv_memcpy(dither_color_buf, grad->color_map + clipped_coords.x1 - bg_coords.x1,
+                                  clipped_w * sizeof(lv_color_t));
+                        lv_draw_sw_dither_color_line(&dsc->grad.dither, dither_color_buf,
+                                                     clipped_coords.x1 - bg_coords.x1, h - bg_coords.y1, clipped_w);
+                    }
+                    break;
 #if LV_USE_DRAW_SW_COMPLEX_GRADIENTS
                 case LV_GRAD_DIR_LINEAR:
                     lv_draw_sw_grad_linear_get_line(&dsc->grad, clipped_coords.x1 - bg_coords.x1, h - bg_coords.y1, coords_bg_w, grad);
+                    if(dither) lv_draw_sw_dither_color_line(&dsc->grad.dither, grad->color_map,
+                                                            clipped_coords.x1 - bg_coords.x1, h - bg_coords.y1, clipped_w);
                     break;
                 case LV_GRAD_DIR_RADIAL:
                     lv_draw_sw_grad_radial_get_line(&dsc->grad, clipped_coords.x1 - bg_coords.x1, h - bg_coords.y1, coords_bg_w, grad);
+                    if(dither) lv_draw_sw_dither_color_line(&dsc->grad.dither, grad->color_map,
+                                                            clipped_coords.x1 - bg_coords.x1, h - bg_coords.y1, clipped_w);
                     break;
                 case LV_GRAD_DIR_CONICAL:
                     lv_draw_sw_grad_conical_get_line(&dsc->grad, clipped_coords.x1 - bg_coords.x1, h - bg_coords.y1, coords_bg_w, grad);
+                    if(dither) lv_draw_sw_dither_color_line(&dsc->grad.dither, grad->color_map,
+                                                            clipped_coords.x1 - bg_coords.x1, h - bg_coords.y1, clipped_w);
                     break;
 #endif
                 default:
@@ -318,6 +365,7 @@ void lv_draw_sw_fill(lv_draw_task_t * t, lv_draw_fill_dsc_t * dsc, const lv_area
         lv_free(mask_buf);
         lv_draw_sw_mask_free_param(&mask_rout_param);
     }
+    if(dither_color_buf) lv_free(dither_color_buf);
     if(grad) {
         lv_draw_sw_grad_cleanup(grad);
     }

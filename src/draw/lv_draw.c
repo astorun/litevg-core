@@ -558,6 +558,7 @@ void lv_draw_layer_finish_drop_shadow(lv_layer_t * drop_shadow_layer, const lv_d
     lv_draw_blur_dsc_init(&blur_dsc);
     blur_dsc.blur_radius = base->drop_shadow_blur_radius;
     blur_dsc.quality = base->drop_shadow_quality;
+    blur_dsc.dither = base->drop_shadow_dither;
     lv_draw_blur(drop_shadow_layer, &blur_dsc, &drop_shadow_layer->buf_area);
 
     lv_area_move(&drop_shadow_area, base->drop_shadow_ofs_x, base->drop_shadow_ofs_y);

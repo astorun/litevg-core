@@ -15,6 +15,7 @@ extern "C" {
  *********************/
 #include "../config/lv_conf_internal.h"
 #include "lv_color.h"
+#include "lv_dither.h"
 #include "../core/lv_area.h"
 
 /*********************
@@ -85,6 +86,7 @@ typedef struct {
             int16_t     end_angle;                      /**< End angle 0..3600 */
         } conical;
     } params;
+    lv_dither_dsc_t dither;
     void * state;
 } lv_grad_dsc_t;
 

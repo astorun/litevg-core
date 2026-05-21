@@ -583,6 +583,12 @@ static inline const lv_grad_dsc_t * lv_obj_get_style_bg_grad(const lv_obj_t * ob
     return (const lv_grad_dsc_t *)v.ptr;
 }
 
+static inline const lv_dither_dsc_t * lv_obj_get_style_bg_dither(const lv_obj_t * obj, lv_part_t part)
+{
+    lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BG_DITHER);
+    return (const lv_dither_dsc_t *)v.ptr;
+}
+
 /**
  * Get a background image. Can be a pointer to `lv_image_dsc_t`, a path to a file or
  * an `LV_SYMBOL_...`.
@@ -885,6 +891,12 @@ static inline lv_opa_t lv_obj_get_style_shadow_opa(const lv_obj_t * obj, lv_part
 {
     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_SHADOW_OPA);
     return (lv_opa_t)v.num;
+}
+
+static inline const lv_dither_dsc_t * lv_obj_get_style_shadow_dither(const lv_obj_t * obj, lv_part_t part)
+{
+    lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_SHADOW_DITHER);
+    return (const lv_dither_dsc_t *)v.ptr;
 }
 
 /**
@@ -1318,6 +1330,12 @@ static inline lv_blur_quality_t lv_obj_get_style_blur_quality(const lv_obj_t * o
     return (lv_blur_quality_t)v.num;
 }
 
+static inline const lv_dither_dsc_t * lv_obj_get_style_blur_dither(const lv_obj_t * obj, lv_part_t part)
+{
+    lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_BLUR_DITHER);
+    return (const lv_dither_dsc_t *)v.ptr;
+}
+
 /**
  * Gets the intensity of blurring. Applied on each lv_part separately before the
  * children are rendered.
@@ -1403,6 +1421,12 @@ static inline lv_blur_quality_t lv_obj_get_style_drop_shadow_quality(const lv_ob
 {
     lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_DROP_SHADOW_QUALITY);
     return (lv_blur_quality_t)v.num;
+}
+
+static inline const lv_dither_dsc_t * lv_obj_get_style_drop_shadow_dither(const lv_obj_t * obj, lv_part_t part)
+{
+    lv_style_value_t v = lv_obj_get_style_prop(obj, part, LV_STYLE_DROP_SHADOW_DITHER);
+    return (const lv_dither_dsc_t *)v.ptr;
 }
 
 /**
