@@ -90,6 +90,7 @@ extern "C" {
 #include "draw/sw/blend/riscv_v/lv_blend_riscv_vector_emulation.h"
 #include "draw/sw/blend/riscv_v/lv_draw_sw_blend_riscv_v_to_rgb888.h"
 #include "draw/sw/lv_draw_sw.h"
+#include "draw/sw/lv_draw_sw_dither.h"
 #include "draw/sw/lv_draw_sw_grad.h"
 #include "draw/sw/lv_draw_sw_mask.h"
 #include "draw/sw/lv_draw_sw_mask_private.h"
