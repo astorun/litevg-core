@@ -671,8 +671,12 @@
 
 /** Enable LiteVG Designer dither descriptors and software-renderer dither hooks. */
 #ifndef LV_USE_DITHER
-    #ifdef CONFIG_LV_USE_DITHER
-        #define LV_USE_DITHER CONFIG_LV_USE_DITHER
+    #ifdef LV_KCONFIG_PRESENT
+        #ifdef CONFIG_LV_USE_DITHER
+            #define LV_USE_DITHER CONFIG_LV_USE_DITHER
+        #else
+            #define LV_USE_DITHER 0
+        #endif
     #else
         #define LV_USE_DITHER 1
     #endif
