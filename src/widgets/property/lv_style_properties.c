@@ -14,7 +14,7 @@
  * Generated code from properties.py
  */
 /* *INDENT-OFF* */
-const lv_property_name_t lv_style_property_names[131] = {
+const lv_property_name_t lv_style_property_names[135] = {
     {"align",                  LV_PROPERTY_STYLE_ALIGN,},
     {"anim",                   LV_PROPERTY_STYLE_ANIM,},
     {"anim_duration",          LV_PROPERTY_STYLE_ANIM_DURATION,},
@@ -25,6 +25,7 @@ const lv_property_name_t lv_style_property_names[131] = {
     {"arc_width",              LV_PROPERTY_STYLE_ARC_WIDTH,},
     {"base_dir",               LV_PROPERTY_STYLE_BASE_DIR,},
     {"bg_color",               LV_PROPERTY_STYLE_BG_COLOR,},
+    {"bg_dither",              LV_PROPERTY_STYLE_BG_DITHER,},
     {"bg_grad",                LV_PROPERTY_STYLE_BG_GRAD,},
     {"bg_grad_color",          LV_PROPERTY_STYLE_BG_GRAD_COLOR,},
     {"bg_grad_dir",            LV_PROPERTY_STYLE_BG_GRAD_DIR,},
@@ -41,6 +42,7 @@ const lv_property_name_t lv_style_property_names[131] = {
     {"bitmap_mask_src",        LV_PROPERTY_STYLE_BITMAP_MASK_SRC,},
     {"blend_mode",             LV_PROPERTY_STYLE_BLEND_MODE,},
     {"blur_backdrop",          LV_PROPERTY_STYLE_BLUR_BACKDROP,},
+    {"blur_dither",            LV_PROPERTY_STYLE_BLUR_DITHER,},
     {"blur_quality",           LV_PROPERTY_STYLE_BLUR_QUALITY,},
     {"blur_radius",            LV_PROPERTY_STYLE_BLUR_RADIUS,},
     {"border_color",           LV_PROPERTY_STYLE_BORDER_COLOR,},
@@ -52,6 +54,7 @@ const lv_property_name_t lv_style_property_names[131] = {
     {"color_filter_dsc",       LV_PROPERTY_STYLE_COLOR_FILTER_DSC,},
     {"color_filter_opa",       LV_PROPERTY_STYLE_COLOR_FILTER_OPA,},
     {"drop_shadow_color",      LV_PROPERTY_STYLE_DROP_SHADOW_COLOR,},
+    {"drop_shadow_dither",     LV_PROPERTY_STYLE_DROP_SHADOW_DITHER,},
     {"drop_shadow_offset_x",   LV_PROPERTY_STYLE_DROP_SHADOW_OFFSET_X,},
     {"drop_shadow_offset_y",   LV_PROPERTY_STYLE_DROP_SHADOW_OFFSET_Y,},
     {"drop_shadow_opa",        LV_PROPERTY_STYLE_DROP_SHADOW_OPA,},
@@ -114,6 +117,7 @@ const lv_property_name_t lv_style_property_names[131] = {
     {"recolor_opa",            LV_PROPERTY_STYLE_RECOLOR_OPA,},
     {"rotary_sensitivity",     LV_PROPERTY_STYLE_ROTARY_SENSITIVITY,},
     {"shadow_color",           LV_PROPERTY_STYLE_SHADOW_COLOR,},
+    {"shadow_dither",          LV_PROPERTY_STYLE_SHADOW_DITHER,},
     {"shadow_offset_x",        LV_PROPERTY_STYLE_SHADOW_OFFSET_X,},
     {"shadow_offset_y",        LV_PROPERTY_STYLE_SHADOW_OFFSET_Y,},
     {"shadow_opa",             LV_PROPERTY_STYLE_SHADOW_OPA,},
