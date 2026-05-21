@@ -1,0 +1,28 @@
+name: Sync Upstream Branch
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-upstream-branch
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout LiteVG Core
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Mirror official LVGL master to upstream branch
+        run: |
+          git remote add lvgl https://github.com/lvgl/lvgl.git
+          git fetch lvgl master
+          git push origin refs/remotes/lvgl/master:refs/heads/upstream --force

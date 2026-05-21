@@ -1,6 +1,6 @@
-# litevg-lvgl-expanded Project Notes
+# LiteVG Core Project Notes
 
-This repo is the LiteVG Designer expanded LVGL fork.
+This repo is the LiteVG Designer LVGL fork with LiteVG-specific additions.
 
 ## Repo Relationships
 
@@ -14,19 +14,24 @@ Expected sibling layout:
 github-repos/
   litevg-designer/
   litevg-wasm-generator/
-  litevg-lvgl-expanded/
+  litevg-core/
 ```
+
+## Upstream Merge Policy
+
+- When merging or cherry-picking from upstream LVGL, preserve this repo's `README.md` unless the user explicitly asks to change it.
+- The `upstream` branch is an automated mirror of official LVGL `master`; do not edit it manually.
+- Merge or cherry-pick from `upstream` into `main` for LiteVG Core updates.
 
 ## Branch And Tag Policy
 
-- Remote branches are intentionally minimal:
-  - `main`
-  - `litevg/v9.5`
-- Current custom work should happen on `litevg/v9.5`.
+- `main` is the active LiteVG Core workspace branch.
+- `upstream` mirrors official LVGL `master` on an hourly GitHub Actions schedule.
+- Create release branches from `main` when preparing a specific LiteVG Core release, then keep those branches stable except for targeted fixes.
 - Official LVGL tags are not kept on this fork remote.
 - Future custom releases should use namespaced tags, for example:
-  - `litevg-v9.5.0-expanded.1`
-  - `litevg-v9.5.0-expanded.2`
+  - `litevg-v9.5.0-core.1`
+  - `litevg-v9.5.0-core.2`
 
 ## Current Native Dither Work
 
