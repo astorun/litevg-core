@@ -1,8 +1,10 @@
-<p align="right">
-  <b>English</b> | <a href="./docs/README_zh.md">中文</a> | <a href="./docs/README_pt_BR.md">Português do Brasil</a> | <a href="./docs/README_jp.md">日本語</a> | <a href="./docs/README_he.md">עברית</a>
+<h1 align="center">LiteVG Core</h1>
+
+<p align="center">
+  LiteVG Core, formerly LiteVG-Expanded, is an LVGL-based graphics library that keeps LVGL's core features while adding LiteVG-specific capabilities on top. It is specifically designed to be used with the LiteVG Designer UI editor and its WASM/runtime generation workflow, while preserving compatibility with the upstream LVGL project wherever practical.
 </p>
 
-<br>
+<br/>
 
 <p align="center">
   <img src="https://lvgl.io/github-assets/logo-colored.png" width=300px>
