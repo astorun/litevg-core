@@ -25,4 +25,13 @@ jobs:
         run: |
           git remote add lvgl https://github.com/lvgl/lvgl.git
           git fetch lvgl master
-          git push origin refs/remotes/lvgl/master:refs/heads/upstream --force
+          git fetch origin upstream
+          git checkout -B sync-upstream refs/remotes/lvgl/master
+          git checkout origin/upstream -- .github/workflows
+          git add .github/workflows
+          if git diff --cached --quiet; then
+            echo "No changes to push"
+            exit 0
+          fi
+          git commit -m "Sync upstream branch"
+          git push origin HEAD:refs/heads/upstream --force
