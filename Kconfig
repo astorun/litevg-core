@@ -579,6 +579,16 @@ menu "LVGL configuration"
 			bool "Use NemaGFX acceleration"
 			default n
 
+		config LV_NEMA_USE_CACHE
+			bool "Cache handling of NemaGFX"
+			depends on LV_USE_NEMA_GFX
+			default n
+
+		config LV_NEMA_CACHE_HAL_INCLUDE
+			string "NemaGFX Cache HAL include"
+			default "stm32u5xx_hal.h"
+			depends on LV_USE_NEMA_GFX && LV_NEMA_USE_CACHE
+
 		choice LV_USE_NEMA_LIB
 			prompt "NemaGFX static library"
 			depends on LV_USE_NEMA_GFX
@@ -689,7 +699,6 @@ menu "LVGL configuration"
 			int "Draw letter cache count"
 			default 512
 			depends on LV_USE_DRAW_NANOVG
-
 	endmenu
 
 	menu "Feature Configuration"
@@ -854,7 +863,27 @@ menu "LVGL configuration"
 				config LV_CHECK_ARG_LOG_MODE_VERBOSE
 					bool "Verbose: log 'Check failed: <cond>' plus caller-supplied message"
 					depends on LV_USE_LOG
+
 			endchoice
+
+			config LV_USE_CHECK_OBJ_CLASSTYPE
+				bool "Enable class check in LV_CHECK_OBJ"
+				default n
+				depends on LV_USE_CHECK_ARG
+				help
+					When enabled, LV_CHECK_OBJ verifies that the object has the
+					expected class (lv_obj_has_class). When disabled, the class
+					check is skipped even if a class argument is supplied.
+
+			config LV_USE_CHECK_OBJ_VALIDITY
+				bool "Enable widget-tree validity check in LV_CHECK_OBJ"
+				default n
+				depends on LV_USE_CHECK_ARG
+				help
+					When enabled, LV_CHECK_OBJ also verifies that the object is
+					still part of the widget tree (lv_obj_is_valid). When disabled,
+					the validity check is skipped even if the associated argument
+					is supplied.
 
 			config LV_CHECK_ARG_LOG_MODE
 				int
@@ -1670,6 +1699,16 @@ menu "LVGL configuration"
 		config LV_GIF_CACHE_DECODE_DATA
 			bool "Use extra 16KB RAM to cache decoded data to accelerate"
 			depends on LV_USE_GIF
+
+		config LV_GIF_MAX_WIDTH
+			int "Maximum GIF canvas width in pixels (GIFs wider than this are rejected)"
+			depends on LV_USE_GIF
+			default 480
+
+		config LV_GIF_MAX_HEIGHT
+			int "Maximum GIF canvas height in pixels (GIFs taller than this are rejected)"
+			depends on LV_USE_GIF
+			default 32768
 
 		config LV_BIN_DECODER_RAM_LOAD
 			bool "Decode whole image to RAM for bin decoder"

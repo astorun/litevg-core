@@ -1,12 +1,11 @@
 ---
 title: "Tab View (lv_tabview)"
-description: The Tab View Widget can be used to organize content in tabs.
+description: "Organize content into tabs. Tab buttons can sit on any side of the view."
 ---
 
 ## Overview
 
-The Tab View Widget can be used to organize content in tabs. The Tab
-View is built from other Widgets:
+Tab View organizes content into tabs. It is built from other widgets:
 
 - Main container: [base widget](/widgets/base_widget)
 - Tab buttons: an [base widget](/widgets/base_widget) with [Button (lv_button)](/widgets/button)
@@ -34,7 +33,7 @@ New tabs can be added with <ApiLink name="lv_tabview_add_tab" display="lv_tabvie
 This will return a pointer to a [base widget](/widgets/base_widget) where
 the tab's content can be created.
 
-<LvglExample name="lv_example_tabview_basic" path="widgets/tabview/tabview_basic/lv_example_tabview_basic" />
+<LvglExample name="lv_example_tabview_basic" path="widgets/tabview/lv_example_tabview_basic" />
 
 ## Renaming tabs
 
@@ -55,14 +54,14 @@ disabled by removing the <ApiLink name="LV_OBJ_FLAG_SCROLLABLE" /> flag from
 After that, tabs can only be switched by tapping a tab button or by calling
 <ApiLink name="lv_tabview_set_active" />.
 
-<LvglExample name="lv_example_tabview_active_tab" path="widgets/tabview/tabview_active_tab/lv_example_tabview_active_tab" />
+<LvglExample name="lv_example_tabview_active_tab" path="widgets/tabview/lv_example_tabview_active_tab" />
 
 ## Setting tab bar position
 
 Using the <ApiLink name="lv_tabview_set_tab_bar_position" display="lv_tabview_set_tab_bar_position(tabview, LV_DIR_LEFT/RIGHT/TOP/BOTTOM)" />
 the tab bar can be moved to any side.
 
-<LvglExample name="lv_example_tabview_tab_bar_position" path="widgets/tabview/tabview_tab_bar_position/lv_example_tabview_tab_bar_position" />
+<LvglExample name="lv_example_tabview_tab_bar_position" path="widgets/tabview/lv_example_tabview_tab_bar_position" />
 
 ## Setting tab bar size
 
@@ -76,7 +75,7 @@ The tab view exposes three independent style targets: the tab view body, the
 tab bar container, and individual tab buttons. Each can be styled separately
 to customize background, padding, indicator colors, and per-tab accents.
 
-<LvglExample name="lv_example_tabview_tab_bar_style" path="widgets/tabview/tabview_tab_bar_style/lv_example_tabview_tab_bar_style" />
+<LvglExample name="lv_example_tabview_tab_bar_style" path="widgets/tabview/lv_example_tabview_tab_bar_style" />
 
 ## Accessing the parts
 
@@ -95,26 +94,20 @@ Tab buttons are regular widgets, so additional children — such as a switch,
 icon, or status indicator — can be parented to a tab button to enrich its
 caption without replacing the default tab bar.
 
-<LvglExample name="lv_example_tabview_tab_button_content" path="widgets/tabview/tabview_tab_button_content/lv_example_tabview_tab_button_content" />
+<LvglExample name="lv_example_tabview_tab_button_content" path="widgets/tabview/lv_example_tabview_tab_button_content" />
 
 ## Events
 
-- <ApiLink name="LV_EVENT_VALUE_CHANGED" /> Sent when a new tab is selected by sliding
-   or clicking the tab button. <ApiLink name="lv_tabview_get_tab_active" display="lv_tabview_get_tab_active(tabview)" />
-   returns the zero based index of the current tab.
+<ApiLink name="LV_EVENT_VALUE_CHANGED" /> is sent when a new tab is selected by sliding
+or clicking the tab button. <ApiLink name="lv_tabview_get_tab_active" display="lv_tabview_get_tab_active(tabview)" />
+returns the zero based index of the current tab.
 
-<Callout type="info" title="Further Reading">
 Learn more about [Events](/common-widget-features/events) emitted by all Widgets.
-
-Learn more about [events](/common-widget-features/events).
-</Callout>
 
 ## Keys
 
 Keys have effect only on the tab buttons.
 Programmatically add these buttons to a group if required.
 
-<Callout type="info" title="Further Reading">
 Learn more about [Keys](/main-modules/indev/keypad).
-</Callout>
 

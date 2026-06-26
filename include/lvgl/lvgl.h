@@ -8,18 +8,6 @@
 #include "3d/lv_gltf_model_loader.h"
 #include "3d/lv_gltf_model_node.h"
 
-/* Define LV_DISABLE_API_MAPPING using a compiler option
- * to make sure your application is not using deprecated names */
-#ifndef LV_DISABLE_API_MAPPING
-    #include "api_map/lv_api_map_v8.h"
-    #include "api_map/lv_api_map_v9_0.h"
-    #include "api_map/lv_api_map_v9_1.h"
-    #include "api_map/lv_api_map_v9_2.h"
-    #include "api_map/lv_api_map_v9_3.h"
-    #include "api_map/lv_api_map_v9_4.h"
-    #include "api_map/lv_api_map_v9_5.h"
-#endif /*LV_DISABLE_API_MAPPING*/
-
 #include "config/lv_conf_internal.h"
 #include "config/lv_conf_kconfig.h"
 #include "core/lv_anim.h"
@@ -50,17 +38,18 @@
 #include "core/lv_translation.h"
 #include "debugging/lv_assert.h"
 #include "debugging/lv_check_arg.h"
+#include "debugging/lv_check_obj.h"
 #include "debugging/lv_monkey.h"
-#include "debugging/lv_profiler.h"
-#include "debugging/lv_profiler_builtin.h"
 #include "debugging/lv_sysmon.h"
-#include "debugging/lv_test.h"
-#include "debugging/lv_test_display.h"
-#include "debugging/lv_test_fs.h"
-#include "debugging/lv_test_helpers.h"
-#include "debugging/lv_test_indev.h"
-#include "debugging/lv_test_indev_gesture.h"
-#include "debugging/lv_test_screenshot_compare.h"
+#include "debugging/profiler/lv_profiler.h"
+#include "debugging/profiler/lv_profiler_builtin.h"
+#include "debugging/test/lv_test.h"
+#include "debugging/test/lv_test_display.h"
+#include "debugging/test/lv_test_fs.h"
+#include "debugging/test/lv_test_helpers.h"
+#include "debugging/test/lv_test_indev.h"
+#include "debugging/test/lv_test_indev_gesture.h"
+#include "debugging/test/lv_test_screenshot_compare.h"
 #include "display/lv_display.h"
 #include "draw/lv_color.h"
 #include "draw/lv_color_op.h"
@@ -220,6 +209,18 @@
 #include "widgets/lv_textarea.h"
 #include "widgets/lv_tileview.h"
 #include "widgets/lv_win.h"
+
+/* Define LV_DISABLE_API_MAPPING using a compiler option
+ * to make sure your application is not using deprecated names */
+#ifndef LV_DISABLE_API_MAPPING
+    #include "api_map/lv_api_map_v8.h"
+    #include "api_map/lv_api_map_v9_0.h"
+    #include "api_map/lv_api_map_v9_1.h"
+    #include "api_map/lv_api_map_v9_2.h"
+    #include "api_map/lv_api_map_v9_3.h"
+    #include "api_map/lv_api_map_v9_4.h"
+    #include "api_map/lv_api_map_v9_5.h"
+#endif /*LV_DISABLE_API_MAPPING*/
 
 /** Gives 1 if the x.y.z version is supported in the current version
  * Usage:

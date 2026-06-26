@@ -181,7 +181,7 @@ lv_indev_t * lv_indev_get_next(lv_indev_t * indev)
         return lv_ll_get_next(indev_ll_head, indev);
 }
 
-void indev_read_core(lv_indev_t * indev, lv_indev_data_t * data)
+static void indev_read_core(lv_indev_t * indev, lv_indev_data_t * data)
 {
     LV_PROFILER_INDEV_BEGIN;
     lv_memzero(data, sizeof(lv_indev_data_t));
@@ -1783,7 +1783,7 @@ static void indev_click_focus(lv_indev_t * indev)
 * Handle the gesture of indev_proc_p->pointer.act_obj
 * @param indev pointer to an input device state
 */
-void indev_gesture(lv_indev_t * indev)
+static void indev_gesture(lv_indev_t * indev)
 {
     if(indev->pointer.scroll_obj) return;
     if(indev->pointer.gesture_sent) return;

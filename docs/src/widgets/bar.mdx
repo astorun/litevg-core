@@ -1,19 +1,20 @@
 ---
 title: "Bar (lv_bar)"
-description: "The Bar Widget has a background and an indicator. The length of the indicator against the background indicates the Bar's current value."
+description: "Non-interactive progress bar with a background and an indicator whose length shows the current value."
 ---
 
 ## Overview
 
-The Bar Widget has a background and an indicator. The length of the
-indicator against the background indicates the Bar's current value.
+The Bar has a background and an indicator. The length of the indicator
+shows the current value.
 
-Both the start and end values of the Bar can be set. Changing the start value to a
-value other than the minimum value in its range adjusts the start position of the indicator.
+Both the start and end of the indicator can be set. Moving the start away
+from the minimum value lets the indicator begin somewhere in the middle of
+the bar.
 
 ## Orientation and size
 
-<LvglExample name="lv_example_bar_orientation" path="widgets/bar/bar_orientation/lv_example_bar_orientation" />
+<LvglExample name="lv_example_bar_orientation" path="widgets/bar/lv_example_bar_orientation" />
 
 Width and height pick orientation by default. Override with
 <ApiLink name="lv_bar_set_orientation" display="lv_bar_set_orientation(bar, LV_BAR_ORIENTATION_…)" /> — `AUTO`,
@@ -21,7 +22,7 @@ Width and height pick orientation by default. Override with
 
 ## Value and range
 
-<LvglExample name="lv_example_bar_value_range" path="widgets/bar/bar_value_range/lv_example_bar_value_range" />
+<LvglExample name="lv_example_bar_value_range" path="widgets/bar/lv_example_bar_value_range" />
 
 - <ApiLink name="lv_bar_set_value" display="lv_bar_set_value(bar, v, LV_ANIM_ON/OFF)" /> — set value; animation
   toggle is the last argument.
@@ -30,7 +31,7 @@ Width and height pick orientation by default. Override with
 
 ## Modes
 
-<LvglExample name="lv_example_bar_modes" path="widgets/bar/bar_modes/lv_example_bar_modes" />
+<LvglExample name="lv_example_bar_modes" path="widgets/bar/lv_example_bar_modes" />
 
 Set with <ApiLink name="lv_bar_set_mode" display="lv_bar_set_mode(bar, LV_BAR_MODE_…)" />:
 
@@ -50,7 +51,7 @@ Set with <ApiLink name="lv_bar_set_mode" display="lv_bar_set_mode(bar, LV_BAR_MO
 - <ApiLink name="LV_PART_INDICATOR" /> The Bar's indicator; also uses the [typical
    background style properties](/common-widget-features/styles/overview).
 
-<LvglExample name="lv_example_bar_styling" path="widgets/bar/bar_styling/lv_example_bar_styling" />
+<LvglExample name="lv_example_bar_styling" path="widgets/bar/lv_example_bar_styling" />
 
 Bar has two stylable parts: <ApiLink name="LV_PART_MAIN" /> (the
 background track) and <ApiLink name="LV_PART_INDICATOR" /> (the filled
@@ -63,7 +64,7 @@ on MAIN shrinks the indicator inside the track.
 
 ### Image indicator
 
-<LvglExample name="lv_example_bar_img_indicator" path="widgets/bar/bar_img_indicator/lv_example_bar_img_indicator" />
+<LvglExample name="lv_example_bar_img_indicator" path="widgets/bar/lv_example_bar_img_indicator" />
 
 Setting `bg_image_src` on a part replaces the solid fill with pixels
 sampled from a bitmap. The image is drawn from the left edge of the part
@@ -92,22 +93,4 @@ supported.
 To show the value live in a label next to the widget, attach a label and call <ApiLink name="lv_label_bind_text" display="lv_label_bind_text(label, &subject, &quot;%d&quot;)" /> — the format string accepts any printf-style specifier (XML: `bind_text` + `bind_text-fmt`).
 
 
-<LvglExample name="lv_example_bar_bind_value" path="widgets/bar/bar_bind_value/lv_example_bar_bind_value" />
-
-## Events
-
-No special events are sent by Bar Widgets.
-
-<Callout type="info" title="Further Reading">
-Learn more about [Events](/common-widget-features/events) emitted by all Widgets.
-
-Learn more about [events](/common-widget-features/events).
-</Callout>
-
-## Keys
-
-No *Keys* are processed by Bar Widgets.
-
-<Callout type="info" title="Further Reading">
-Learn more about [Keys](/main-modules/indev/keypad).
-</Callout>
+<LvglExample name="lv_example_bar_bind_value" path="widgets/bar/lv_example_bar_bind_value" />
