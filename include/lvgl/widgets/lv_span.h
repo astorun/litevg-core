@@ -72,7 +72,8 @@ void lv_span_stack_deinit(void);
 
 /**
  * Create a spangroup object
- * @param parent    pointer to an object, it will be the parent of the new spangroup
+ * @param parent    pointer to a parent widget @nullable. When NULL, the widget
+ *                  is created as a screen on the default display.
  * @return          pointer to the created spangroup
  */
 lv_obj_t * lv_spangroup_create(lv_obj_t * parent);
@@ -89,7 +90,7 @@ lv_span_t * lv_spangroup_add_span(lv_obj_t * obj);
  * @param obj   pointer to a spangroup object.
  * @param span  pointer to a span.
  * @note        Note that before calling `lv_spangroup_delete_span`
- *              `lv_observer_remove` needs to be called manually as LVGL can't remove the
+ *              `lv_observer_delete` needs to be called manually as LVGL can't remove the
  *              binding automatically.
  */
 void lv_spangroup_delete_span(lv_obj_t * obj, lv_span_t * span);
