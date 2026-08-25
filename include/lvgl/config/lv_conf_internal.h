@@ -62,6 +62,7 @@
 #define LV_DRAW_SW_ASM_NEON      1
 #define LV_DRAW_SW_ASM_HELIUM    2
 #define LV_DRAW_SW_ASM_RISCV_V   3
+#define LV_DRAW_SW_ASM_SVE2      4
 #define LV_DRAW_SW_ASM_CUSTOM    255
 
 /* VG-Lite GPU (series and revision) */
@@ -5011,7 +5012,7 @@
 #endif
 
 #ifndef LV_USE_EGL
-    #if ((LV_LINUX_DRM_USE_EGL && LV_USE_LINUX_DRM) || (LV_SDL_USE_EGL && LV_USE_SDL) || (LV_WAYLAND_USE_EGL && LV_USE_WAYLAND))
+    #if ((LV_LINUX_DRM_USE_EGL && LV_USE_LINUX_DRM) || (LV_SDL_USE_EGL && LV_USE_SDL) || (LV_WAYLAND_USE_EGL && LV_USE_WAYLAND) || (LV_USE_NANOVG_TEST_HEADLESS && LV_USE_DRAW_NANOVG && LV_USE_TEST))
         #define LV_USE_EGL 1
     #else
         #define LV_USE_EGL 0

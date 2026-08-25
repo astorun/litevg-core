@@ -552,6 +552,8 @@ choice LV_USE_DRAW_SW_ASM
 		bool "2: Helium"
 	config LV_DRAW_SW_ASM_RISCV_V
 		bool "3: RISC-V Vector"
+	config LV_DRAW_SW_ASM_SVE2
+		bool "4: SVE2"
 	config LV_DRAW_SW_ASM_CUSTOM
 		bool "255: Custom"
 		select LV_DRAW_SW_ASM_USE_CUSTOM_INCLUDE
@@ -563,6 +565,7 @@ config LV_USE_DRAW_SW_ASM
 	default 1 if LV_DRAW_SW_ASM_NEON
 	default 2 if LV_DRAW_SW_ASM_HELIUM
 	default 3 if LV_DRAW_SW_ASM_RISCV_V
+	default 4 if LV_DRAW_SW_ASM_SVE2
 	default 255 if LV_DRAW_SW_ASM_CUSTOM
 
 config LV_DRAW_SW_ASM_USE_CUSTOM_INCLUDE
@@ -3343,6 +3346,7 @@ config LV_TEST_SCREENSHOT_CREATE_REFERENCE_IMAGE
 config LV_USE_NANOVG_TEST_HEADLESS
 	bool "Headless EGL display for NanoVG"
 	depends on LV_USE_DRAW_NANOVG
+	select LV_USE_EGL
 	help
 		Render into an off-screen EGL pbuffer instead of a window and read the
 		pixels back into the LVGL draw buffer, so screenshot compares work the
