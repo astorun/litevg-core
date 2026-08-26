@@ -97,8 +97,12 @@ lv_display_t * lv_linux_drm_create(void)
 
 lv_result_t lv_linux_drm_set_file(lv_display_t * disp, const char * file, int64_t connector_id)
 {
+    LV_CHECK_ARG(disp != NULL, return LV_RESULT_INVALID);
+    LV_CHECK_ARG(file != NULL, return LV_RESULT_INVALID);
     LV_UNUSED(connector_id);
     lv_drm_ctx_t * ctx = lv_display_get_driver_data(disp);
+
+    LV_CHECK_ARG(ctx != NULL, return LV_RESULT_INVALID, "Invalid display");
 
     lv_result_t err = drm_device_init(ctx, file);
     if(err != LV_RESULT_OK) {
@@ -137,11 +141,9 @@ lv_result_t lv_linux_drm_set_file(lv_display_t * disp, const char * file, int64_
 
 void lv_linux_drm_set_mode_cb(lv_display_t * disp, lv_linux_drm_select_mode_cb_t callback)
 {
-    if(!disp) {
-        LV_LOG_ERROR("Cannot set a mode select callback on a NULL display");
-        return;
-    }
+    LV_CHECK_ARG(disp != NULL, return);
     lv_drm_ctx_t * ctx = lv_display_get_driver_data(disp);
+    LV_CHECK_ARG(ctx != NULL, return, "Invalid display");
     ctx->mode_select_cb = callback;
 }
 
@@ -210,7 +212,7 @@ static void flush_cb(lv_display_t * disp, const lv_area_t * area, uint8_t * px_m
         set_viewport(disp);
         lv_drm_ctx_t * ctx = lv_display_get_driver_data(disp);
 #if LV_USE_DRAW_OPENGLES
-        lv_opengles_render_display_texture(disp, false, true);
+        lv_opengles_render_display_texture_internal(disp, false, true);
 #endif /*LV_USE_DRAW_OPENGLES*/
         lv_opengles_egl_update(ctx->egl_ctx);
     }
@@ -354,7 +356,7 @@ static void drm_on_page_flip(int fd, unsigned int frame, unsigned int sec, unsig
 
 static drm_fb_state_t * drm_fb_state_create(lv_drm_ctx_t * ctx, struct gbm_bo * bo)
 {
-    LV_ASSERT_NULL(bo);
+    LV_ASSERT(bo != NULL);
     drm_fb_state_t * fb = (drm_fb_state_t *)gbm_bo_get_user_data(bo);
 
     if(fb) {
@@ -624,7 +626,7 @@ static drmModeConnector * drm_get_connector(lv_drm_ctx_t * ctx)
 {
     drmModeConnector * connector = NULL;
 
-    LV_ASSERT_NULL(ctx->drm_resources);
+    LV_ASSERT(ctx->drm_resources != NULL);
     for(int i = 0; i < ctx->drm_resources->count_connectors; i++) {
         connector = drmModeGetConnector(ctx->fd, ctx->drm_resources->connectors[i]);
         if(connector->connection == DRM_MODE_CONNECTED && connector->count_modes > 0) {
@@ -638,7 +640,7 @@ static drmModeConnector * drm_get_connector(lv_drm_ctx_t * ctx)
 
 static drmModeModeInfo * drm_get_mode(lv_drm_ctx_t * ctx)
 {
-    LV_ASSERT_NULL(ctx->drm_connector);
+    LV_ASSERT(ctx->drm_connector != NULL);
     if(ctx->mode_select_cb) {
         lv_linux_drm_mode_t * modes = lv_malloc(sizeof(lv_linux_drm_mode_t) * ctx->drm_connector->count_modes);
         if(!modes) {
@@ -696,7 +698,7 @@ static drmModeCrtc * drm_get_crtc(lv_drm_ctx_t * ctx)
 
 static drmModeEncoder * drm_get_encoder(lv_drm_ctx_t * ctx)
 {
-    LV_ASSERT_NULL(ctx->drm_connector);
+    LV_ASSERT(ctx->drm_connector != NULL);
     drmModeEncoder * encoder = NULL;
     for(int i = 0; i < ctx->drm_resources->count_encoders; i++) {
         encoder = drmModeGetEncoder(ctx->fd, ctx->drm_resources->encoders[i]);
@@ -717,7 +719,7 @@ static drmModeEncoder * drm_get_encoder(lv_drm_ctx_t * ctx)
 static void * drm_create_window(void * driver_data, const lv_egl_native_window_properties_t * properties)
 {
     lv_drm_ctx_t * ctx = (lv_drm_ctx_t *)driver_data;
-    LV_ASSERT_NULL(ctx->gbm_dev);
+    LV_ASSERT(ctx->gbm_dev != NULL);
 
     uint32_t format = properties->visual_id;
 

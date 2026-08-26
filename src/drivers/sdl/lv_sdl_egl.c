@@ -117,7 +117,7 @@ static lv_result_t resize_display(lv_display_t * display)
     }
 
     lv_sdl_egl_display_data_t * ddata = lv_sdl_backend_get_display_data(display);
-    LV_ASSERT_NULL(ddata);
+    LV_ASSERT(ddata != NULL);
 
     int32_t hor_res = lv_sdl_window_get_horizontal_resolution(display);
     int32_t ver_res = lv_sdl_window_get_vertical_resolution(display);
@@ -190,14 +190,14 @@ static void flush_cb(lv_display_t * display, const lv_area_t * area, uint8_t * p
     LV_UNUSED(area);
     LV_UNUSED(px_map);
     lv_sdl_egl_display_data_t * ddata = lv_sdl_backend_get_display_data(display);
-    LV_ASSERT_NULL(ddata);
+    LV_ASSERT(ddata != NULL);
 
     if(lv_display_flush_is_last(display)) {
 #if LV_USE_DRAW_OPENGLES
         lv_opengles_viewport(0, 0,
                              lv_display_get_original_horizontal_resolution(display),
                              lv_display_get_original_vertical_resolution(display));
-        lv_opengles_render_display_texture(display, false, true);
+        lv_opengles_render_display_texture_internal(display, false, true);
 #endif /*LV_USE_DRAW_OPENGLES*/
         lv_opengles_egl_update(ddata->egl_ctx);
     }
