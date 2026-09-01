@@ -58,6 +58,9 @@ INTERNAL_PREAMBLE = """\
 #define LV_CONF_INTERNAL_H
 /* clang-format off */
 
+#define LV_CONF_PASTE_(a, b) a##b
+#define LV_CONF_PASTE(a, b)  LV_CONF_PASTE_(a, b)
+
 /* Config options */
 __CONFIG_OPTIONS__
 
@@ -94,11 +97,33 @@ __CONFIG_OPTIONS__
     #endif
 #endif
 
-#ifdef CONFIG_LV_COLOR_DEPTH
+#ifdef CONFIG_LV_STDLIB_BUILTIN
     #define LV_KCONFIG_PRESENT
 #endif
 
-/* 
+/*
+ * LV_COLOR_DEPTH was replaced by LV_COLOR_FORMAT_DEFAULT.
+ * Derive LV_COLOR_FORMAT_DEFAULT from it here
+ * TODO: Remove this for v10.
+ */
+#if !defined(LV_COLOR_FORMAT_DEFAULT) && defined(LV_COLOR_DEPTH)
+    #warning LV_COLOR_DEPTH is deprecated and will be removed in a future release. Define LV_COLOR_FORMAT_DEFAULT instead
+    #if LV_COLOR_DEPTH == 1
+        #define LV_COLOR_FORMAT_DEFAULT LV_COLOR_FORMAT_I1
+    #elif LV_COLOR_DEPTH == 8
+        #define LV_COLOR_FORMAT_DEFAULT LV_COLOR_FORMAT_L8
+    #elif LV_COLOR_DEPTH == 16
+        #define LV_COLOR_FORMAT_DEFAULT LV_COLOR_FORMAT_RGB565
+    #elif LV_COLOR_DEPTH == 24
+        #define LV_COLOR_FORMAT_DEFAULT LV_COLOR_FORMAT_RGB888
+    #elif LV_COLOR_DEPTH == 32
+        #define LV_COLOR_FORMAT_DEFAULT LV_COLOR_FORMAT_XRGB8888
+    #else
+        #error "LV_COLOR_DEPTH should be 1, 8, 16, 24 or 32"
+    #endif
+#endif
+
+/*
  * Detect if the user is using the new calendar day/month configuration
  * in order to avoid warnings for users that have migrated.
  */
@@ -108,7 +133,7 @@ __CONFIG_OPTIONS__
 #define LV_CALENDAR_DISABLE_DEFAULT_DAY_NAMES 0
 #endif
 
-/* 
+/*
  * Detect if the user is using the new calendar day/month configuration
  * in order to avoid warnings for users that have migrated.
  */
@@ -118,7 +143,7 @@ __CONFIG_OPTIONS__
 #define LV_CALENDAR_DISABLE_DEFAULT_MONTH_NAMES 0
 #endif
 
-/* 
+/*
  * Detect if the user is using the xkb keymap configuration
  * in order to avoid warnings for users that have migrated.
  * we only need to check for it if LV_LIBINPUT_XKB is enabled
@@ -152,7 +177,7 @@ INTERNAL_COMPATIBILITY_BLOCK = r"""
  * Start of compatibility block
  -----------------------------------*/
 
-/*  
+/*
  * TODO: Remove this for v10.
  * These checks can't go to lv_conf_check.c as we export the correct
  * settings so the user code continues to work
@@ -160,9 +185,9 @@ INTERNAL_COMPATIBILITY_BLOCK = r"""
 
 /*
  *  Before the user selected either LV_USE_LZ4_INTERNAL or LV_USE_LZ4_EXTERNAL
- *  For v9.6 LV_USE_LZ4_EXTERNAL doesn't exist anymore, instead the user 
+ *  For v9.6 LV_USE_LZ4_EXTERNAL doesn't exist anymore, instead the user
  *  enables LV_USE_LZ4 and disables LV_USE_LZ4_INTERNAL
- *  To support users using LV_USE_LZ4_EXTERNAL from before v9.6 we 
+ *  To support users using LV_USE_LZ4_EXTERNAL from before v9.6 we
  *  we enable LV_USE_LZ4 for them
  */
 #if defined(LV_USE_LZ4_EXTERNAL) && LV_USE_LZ4_EXTERNAL
@@ -173,11 +198,11 @@ INTERNAL_COMPATIBILITY_BLOCK = r"""
 #endif /*!LV_USE_LZ4*/
 #endif /*defined(LV_USE_LZ4_EXTERNAL) && LV_USE_LZ4_EXTERNAL*/
 
-/*  
+/*
  *  Before the user selected either LV_USE_THORVG_INTERNAL or LV_USE_THORVG_EXTERNAL
- *  For v9.6 LV_USE_THORVG_EXTERNAL doesn't exist anymore, instead the user 
+ *  For v9.6 LV_USE_THORVG_EXTERNAL doesn't exist anymore, instead the user
  *  enables LV_USE_THORVG and disables LV_USE_THORVG_INTERNAL
- *  To support users using LV_USE_THORVG_EXTERNAL from before v9.6 we 
+ *  To support users using LV_USE_THORVG_EXTERNAL from before v9.6 we
  *  we enable LV_USE_THORVG for them
  */
 #if defined(LV_USE_THORVG_EXTERNAL) && LV_USE_THORVG_EXTERNAL
@@ -188,8 +213,8 @@ INTERNAL_COMPATIBILITY_BLOCK = r"""
 #endif /*!LV_USE_THORVG*/
 #endif /*defined(LV_USE_THORVG_EXTERNAL) && LV_USE_THORVG_EXTERNAL*/
 
-/*  
- *  Backward compatibility. Before the user selected either 
+/*
+ *  Backward compatibility. Before the user selected either
  *  LV_X11_RENDER_MODE_PARTIAL or LV_X11_RENDER_MODE_DIRECT or
  *  LV_X11_RENDER_MODE_FULL. For v9.6, this becomes a single choice:
  *  LV_X11_RENDER_MODE which maps to a LV_DISPLAY_RENDER_MODE value.

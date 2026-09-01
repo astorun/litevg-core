@@ -128,8 +128,18 @@
  * RENDERING CONFIGURATION
  *============================================================================*/
 
-/** Color depth: 1 (I1), 8 (L8), 16 (RGB565), 24 (RGB888), 32 (XRGB8888) */
-#define LV_COLOR_DEPTH 16
+/** Default color format
+ *  Possible values:
+ *  - LV_COLOR_FORMAT_I1
+ *  - LV_COLOR_FORMAT_L8
+ *  - LV_COLOR_FORMAT_RGB565
+ *  - LV_COLOR_FORMAT_RGB565_SWAPPED: RGB565 (Big-endian)
+ *  - LV_COLOR_FORMAT_RGB888
+ *  - LV_COLOR_FORMAT_XRGB8888
+ *  - LV_COLOR_FORMAT_ARGB8888
+ *  - LV_COLOR_FORMAT_ARGB8888_PREMULTIPLIED
+ */
+#define LV_COLOR_FORMAT_DEFAULT LV_COLOR_FORMAT_RGB565
 
 /** 0: no adjustment, get the integer part of the result (round down)
  *  64: round up from x.75
@@ -2379,17 +2389,30 @@
 #define LV_CHECK_ARG_LOG_MODE LV_CHECK_ARG_LOG_MODE_NONE
 
 /** LV_CHECK_OBJ verifies with lv_obj_has_class() that the object has the
- *  expected class. When disabled the check is skipped even if a class
- *  argument is supplied.
+ *  expected class. When disabled the class check is skipped
+ *  (LV_CHECK_OBJ collapses to a NULL check).
  */
 #define LV_USE_CHECK_OBJ_CLASSTYPE 0
 
-/** LV_CHECK_OBJ verifies with lv_obj_is_valid() that the object is still
- *  part of the widget tree. When disabled the check is skipped even if the
- *  associated argument is supplied.
+/** LV_CHECK_OBJ verifies with lv_obj_is_in_widget_tree() that the object is
+ *  still part of the widget tree. When disabled the validity check is
+ *  skipped (only the class/NULL check remains).
  */
 #define LV_USE_CHECK_OBJ_VALIDITY 0
 
+#if LV_USE_CHECK_OBJ_VALIDITY
+#if LV_USE_ASSERT
+/** lv_obj_is_in_widget_tree verifies, while walking up the parent chain,
+ *  that each parent's children array actually contains the child. This
+ *  catches corruption where a child's parent pointer disagrees with the
+ *  parent's children list. Slower than the basic reachability check
+ *  (O(siblings) per level instead of O(1)). The mismatch is reported
+ *  through LV_ASSERT, so LV_USE_ASSERT must be enabled too.
+ */
+#define LV_USE_CHECK_OBJ_PARENT_LINK 0
+
+#endif /*LV_USE_ASSERT*/
+#endif /*LV_USE_CHECK_OBJ_VALIDITY*/
 #endif /*LV_USE_CHECK_ARG*/
 
 
