@@ -298,6 +298,8 @@
         "audio_convert": "pointer",
         "video_convert": "pointer",
         "audio_volume": "pointer",
+        "aligned_frame": "pointer",
+        "color_format": "int",
         "gstreamer_timer": "pointer",
         "frame_queue": "pointer",
         "is_video_info_valid": "bool"
