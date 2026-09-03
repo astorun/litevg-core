@@ -15,7 +15,6 @@
 #include "../display/lv_display_private.h"
 #include "../misc/lv_timer_private.h"
 #include "../draw/lv_draw_private.h"
-#include "../draw/opengles/lv_draw_opengles.h"
 #include "lv_global.h"
 #include "../lvgl_public.h"
 #include "lv_obj_style_internal.h"
@@ -370,12 +369,6 @@ void lv_display_refr_timer(lv_timer_t * timer)
 
     if(timer) {
         disp_refr = timer->user_data;
-        /* Ensure the timer does not run again automatically.
-         * This is done before refreshing in case refreshing invalidates something else.
-         * However if the performance monitor is enabled keep the timer running to count the FPS.*/
-#if !LV_USE_PERF_MONITOR
-        lv_timer_pause(timer);
-#endif
     }
     else {
         disp_refr = lv_display_get_default();
@@ -393,6 +386,15 @@ void lv_display_refr_timer(lv_timer_t * timer)
         LV_PROFILER_REFR_END;
         return;
     }
+
+    /* Ensure the timer does not run again automatically.
+     * This is done before refreshing in case refreshing invalidates something else.
+     * However if the performance monitor is enabled keep the timer running to count the FPS.
+     * Pause here where the draw buffer exists otherwise lv_display_refr_timer() may not be
+     * called again which would yield a blank screen */
+#if !LV_USE_PERF_MONITOR
+    if(timer) lv_timer_pause(timer);
+#endif
 
     lv_result_t res = lv_display_send_event(disp_refr, LV_EVENT_REFR_START, NULL);
     if(res == LV_RESULT_INVALID) {
@@ -1056,30 +1058,9 @@ static void refr_configured_layer(lv_layer_t * layer)
     }
     /*If the screen is transparent initialize it when the flushing is ready*/
     if(lv_color_format_has_alpha(disp_refr->color_format)) {
-#if LV_USE_DRAW_OPENGLES
-        lv_layer_t * clear_target_layer = disp_refr->layer_head ? disp_refr->layer_head : layer;
-        /* TODO: this driver-specific branch is a temporary workaround.
-         * The proper fix may be a generic per-draw-unit clear callback (e.g.
-         * a `clear_area_cb` on `lv_draw_unit_t`) so `lv_refr` can just dispatch
-         * the right clear function. LVGL does not currently expose that hook now.
-         * This is a special-case for Draw_OpenGLES to fix issue #9912 (PR #9987).
-         */
-        /*With Draw_OpenGLES the layer's draw_buf is a dummy CPU buffer and the
-         *real pixels live in a GL texture. Clearing the CPU buffer is a no-op
-         *on the texture, so perform a GPU-side clear of the dirty area.
-         *Key this off the refreshing display's real backing layer instead of
-         *the current layer, because tiled rendering can use temporary tile
-         *layers with NULL user_data.*/
-        if(disp_refr->layer_head != NULL && disp_refr->layer_head->user_data != NULL) {
-            lv_draw_opengles_clear_layer_area(clear_target_layer, &layer->_clip_area);
-        }
-        else
-#endif
-        {
-            lv_area_t clear_area = layer->_clip_area;
-            lv_area_move(&clear_area, -layer->buf_area.x1, -layer->buf_area.y1);
-            lv_draw_buf_clear(layer->draw_buf, &clear_area);
-        }
+        lv_area_t clear_area = layer->_clip_area;
+        lv_area_move(&clear_area, -layer->buf_area.x1, -layer->buf_area.y1);
+        lv_draw_buf_clear_ex(layer->draw_buf, &clear_area, layer);
     }
 
     lv_obj_t * top_act_scr = NULL;

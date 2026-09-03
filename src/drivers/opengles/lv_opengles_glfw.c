@@ -14,6 +14,7 @@
 #include "lv_opengles_debug.h"
 #include "lv_opengles_private.h"
 #include "../../misc/lv_area_private.h"
+#include "../../draw/opengles/lv_draw_opengles.h"
 
 #include <stdlib.h>
 
@@ -299,6 +300,7 @@ lv_display_t * lv_opengles_window_display_create(lv_opengles_window_t * window, 
     static size_t LV_ATTRIBUTE_MEM_ALIGN dummy_buf;
     lv_display_set_buffers(disp, &dummy_buf, NULL, h * lv_draw_buf_width_to_stride(w, LV_COLOR_FORMAT_ARGB8888),
                            LV_DISPLAY_RENDER_MODE_FULL);
+    lv_display_set_draw_buf_handlers(disp, lv_draw_opengles_get_draw_buf_handlers());
 #else
     uint32_t stride = lv_draw_buf_width_to_stride(w, lv_display_get_color_format(disp));
     uint32_t buf_size = stride * h;
@@ -533,18 +535,21 @@ static void window_update_handler(lv_timer_t * t)
                 ensure_init_window_display_texture();
 
                 /* set the dimensions and format to complete the texture */
+                const lv_color_format_t cf = lv_display_get_color_format(texture->disp);
                 const int32_t tex_w = lv_area_get_width(&texture->area);
                 const int32_t tex_h = lv_area_get_height(&texture->area);
-                const uint32_t tex_stride = lv_draw_buf_width_to_stride(tex_w, lv_display_get_color_format(texture->disp));
-                lv_opengles_texture_upload_buf(window_display_texture, texture->fb, tex_w, tex_h, tex_stride);
+                if(lv_opengles_texture_upload_buf(window_display_texture, texture->fb, tex_w, tex_h,
+                                                  lv_draw_buf_width_to_stride(tex_w, cf), cf) != LV_RESULT_OK) {
+                    continue;
+                }
 
                 GL_CALL(glGenerateMipmap(GL_TEXTURE_2D));
 
                 GL_CALL(glBindTexture(GL_TEXTURE_2D, 0));
 
-                lv_opengles_render_texture_rbswap(window_display_texture, &texture->area, texture->opa, window->hor_res,
-                                                  window->ver_res,
-                                                  &texture->area, window->h_flip, window->v_flip);
+                lv_opengles_render_texture_cf(window_display_texture, &texture->area, texture->opa, window->hor_res,
+                                              window->ver_res,
+                                              &texture->area, window->h_flip, window->v_flip, cf);
 #endif
             }
             else {
@@ -561,11 +566,21 @@ static void window_update_handler(lv_timer_t * t)
                 }
 
 #if LV_USE_DRAW_OPENGLES
-                lv_opengles_render_texture_rbswap(texture->texture_id, &texture->area, texture->opa, window->hor_res, window->ver_res,
-                                                  &texture->area, window->h_flip, texture->disp == NULL ? window->v_flip : !window->v_flip);
+                /*The draw unit rendered into the texture, in the OpenGL channel order*/
+                lv_opengles_render_texture(texture->texture_id, &texture->area, texture->opa, window->hor_res, window->ver_res,
+                                           &texture->area, window->h_flip, texture->disp == NULL ? window->v_flip : !window->v_flip);
 #else
-                lv_opengles_render_texture_rbswap(texture->texture_id, &texture->area, texture->opa, window->hor_res, window->ver_res,
-                                                  &texture->area, window->h_flip, window->v_flip);
+                if(texture->disp != NULL) {
+                    /*The texture display uploaded its buffer, so its color format tells the channel order*/
+                    lv_opengles_render_texture_cf(texture->texture_id, &texture->area, texture->opa, window->hor_res,
+                                                  window->ver_res, &texture->area, window->h_flip, window->v_flip,
+                                                  lv_display_get_color_format(texture->disp));
+                }
+                else {
+                    /*A texture of the application, assume the OpenGL channel order*/
+                    lv_opengles_render_texture(texture->texture_id, &texture->area, texture->opa, window->hor_res,
+                                               window->ver_res, &texture->area, window->h_flip, window->v_flip);
+                }
 #endif
             }
         }
