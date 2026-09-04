@@ -540,6 +540,29 @@
 
 #endif /*LV_USE_DRAW_DMA2D*/
 
+/** Accelerate blends, fills, images and text with the EPIC (Enhanced
+ *  Pixel Image Compositor) engine of SiFli BF0 SoCs. Unsupported
+ *  operations fall back to software rendering.
+ *
+ *  Enable: LV_USE_DRAW_SW
+ */
+#define LV_USE_SIFLI_EPIC 0
+
+#if LV_USE_OS != LV_OS_NONE
+#if LV_USE_SIFLI_EPIC
+/** Dispatch EPIC operations from their own thread so the CPU can keep
+ *  rendering in parallel.
+ */
+#define LV_USE_SIFLI_EPIC_DRAW_THREAD 1
+
+/** Check the status of every EPIC call and assert on failure. Useful
+ *  while bringing up a board.
+ */
+#define LV_USE_SIFLI_EPIC_ASSERT 0
+
+#endif /*LV_USE_SIFLI_EPIC*/
+#endif /*LV_USE_OS != LV_OS_NONE*/
+
 /** Offload drawing to an external EVE (FT81X/BT81X) graphics controller over SPI. */
 #define LV_USE_DRAW_EVE 0
 
@@ -558,6 +581,8 @@
 
 /** Accelerate blends, fills and image blits with the NXP G2D API (i.MX 2D GPU).
  *  Requires the g2d library and its headers.
+ *
+ *  Enable: LV_USE_DRAW_SW
  */
 #define LV_USE_DRAW_G2D 0
 
