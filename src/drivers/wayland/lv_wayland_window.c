@@ -196,12 +196,17 @@ void lv_wayland_window_set_maximized(lv_display_t * display, bool maximized)
     LV_CHECK_ARG(display != NULL, return);
     lv_wl_window_t * window = lv_display_get_driver_data(display);
     LV_CHECK_ARG_MSG(window != NULL, return, "Invalid display");
-    if(window->maximized == maximized) {
-        return;
-    }
     lv_wayland_xdg_set_maximized(&window->xdg, maximized);
-    window->maximized = maximized;
 }
+
+bool lv_wayland_window_is_maximized(lv_display_t * display)
+{
+    LV_CHECK_ARG(display != NULL, return false);
+    lv_wl_window_t * window = lv_display_get_driver_data(display);
+    LV_CHECK_ARG_MSG(window != NULL, return false, "Invalid display");
+    return window->maximized;
+}
+
 void lv_wayland_window_set_minimized(lv_display_t * display)
 {
     LV_CHECK_ARG(display != NULL, return);
@@ -236,11 +241,18 @@ void lv_wayland_window_set_fullscreen(lv_display_t * display, bool fullscreen)
     lv_wl_window_t * window = lv_display_get_driver_data(display);
     LV_CHECK_ARG_MSG(window != NULL, return, "Invalid display");
 
-    if(window->fullscreen == fullscreen) {
-        return;
-    }
     lv_wayland_xdg_set_fullscreen(&window->xdg, fullscreen, window->physical_output);
-    window->fullscreen = fullscreen;
+}
+
+bool lv_wayland_window_is_fullscreen(lv_display_t * display)
+{
+    LV_CHECK_ARG(display != NULL, return false);
+    lv_wl_window_t * window = lv_display_get_driver_data(display);
+    LV_CHECK_ARG_MSG(window != NULL, return false, "Invalid display");
+    if(!window) {
+        return false;
+    }
+    return window->fullscreen;
 }
 
 /**********************
@@ -299,10 +311,17 @@ static void delete_event(lv_event_t * e)
     wl_display_roundtrip(lv_wl_ctx.wl_display);
     lv_wayland_backend_deinit_display(&window->backend_ddata, window->lv_disp);
 
-    if(LV_WAYLAND_DIRECT_EXIT) {
-        lv_display_set_driver_data(window->lv_disp, NULL);
+    lv_indev_t * indevs[] = { window->lv_indev_keyboard,
+                              window->lv_indev_pointer,
+                              window->lv_indev_pointeraxis,
+                              window->lv_indev_touch
+                            };
+
+    for(size_t i = 0; i < sizeof(indevs) / sizeof(indevs[0]); ++i) {
+        lv_indev_delete(indevs[i]);
     }
 
+    lv_display_set_driver_data(window->lv_disp, NULL);
     lv_ll_remove(&lv_wl_ctx.window_ll, window);
     lv_free(window);
 
