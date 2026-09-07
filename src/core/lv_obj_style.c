@@ -68,6 +68,7 @@ static void trans_anim_cb(void * _tr, int32_t v);
 static void trans_anim_start_cb(lv_anim_t * a);
 static void trans_anim_completed_cb(lv_anim_t * a);
 static lv_layer_type_t calculate_layer_type(lv_obj_t * obj);
+static bool calculate_has_blur(lv_obj_t * obj);
 static void full_cache_refresh(lv_obj_t * obj, lv_part_t part);
 static void fade_anim_cb(void * obj, int32_t v);
 static void fade_in_anim_completed(lv_anim_t * a);
@@ -284,6 +285,11 @@ void lv_obj_refresh_style(lv_obj_t * obj, lv_part_t part, lv_style_prop_t prop)
         lv_obj_update_layer_type(obj);
     }
 
+    /*Cache whether the widget has blur or drop shadow*/
+    if(prop == LV_STYLE_PROP_ANY || prop == LV_STYLE_BLUR_RADIUS || prop == LV_STYLE_DROP_SHADOW_OPA) {
+        lv_obj_update_blur_status(obj);
+    }
+
     if(prop == LV_STYLE_PROP_ANY || is_ext_draw) {
         lv_obj_refresh_ext_draw_size(obj);
     }
@@ -298,7 +304,7 @@ void lv_obj_refresh_style(lv_obj_t * obj, lv_part_t part, lv_style_prop_t prop)
     LV_PROFILER_STYLE_END;
 }
 
-void lv_obj_style_set_enabled(lv_obj_t * obj, const lv_style_t * style, lv_style_selector_t selector, bool en)
+void lv_obj_set_style_enabled(lv_obj_t * obj, const lv_style_t * style, lv_style_selector_t selector, bool en)
 {
     LV_CHECK_ARG(obj != NULL, return);
     LV_CHECK_ARG(style != NULL, return);
@@ -313,7 +319,7 @@ void lv_obj_style_set_enabled(lv_obj_t * obj, const lv_style_t * style, lv_style
     lv_obj_refresh_style(obj, lv_obj_style_get_selector_part(selector), LV_STYLE_PROP_ANY);
 }
 
-bool lv_obj_style_get_enabled(lv_obj_t * obj, const lv_style_t * style, lv_style_selector_t selector)
+bool lv_obj_get_style_enabled(lv_obj_t * obj, const lv_style_t * style, lv_style_selector_t selector)
 {
     LV_CHECK_ARG(obj != NULL, return false);
     LV_CHECK_ARG(style != NULL, return false);
@@ -326,16 +332,16 @@ bool lv_obj_style_get_enabled(lv_obj_t * obj, const lv_style_t * style, lv_style
 
 void lv_obj_style_set_disabled(lv_obj_t * obj, const lv_style_t * style, lv_style_selector_t selector, bool dis)
 {
-    LV_LOG_DEPRECATED("use lv_obj_style_set_enabled instead (with inverted logic).");
+    LV_LOG_DEPRECATED("use lv_obj_set_style_enabled instead (with inverted logic).");
     LV_CHECK_ARG(obj != NULL, return);
     LV_CHECK_ARG(style != NULL, return);
 
-    lv_obj_style_set_enabled(obj, style, selector, !dis);
+    lv_obj_set_style_enabled(obj, style, selector, !dis);
 }
 
 bool lv_obj_style_get_disabled(lv_obj_t * obj, const lv_style_t * style, lv_style_selector_t selector)
 {
-    LV_LOG_DEPRECATED("use lv_obj_style_get_enabled instead (with inverted logic).");
+    LV_LOG_DEPRECATED("use lv_obj_get_style_enabled instead (with inverted logic).");
     LV_CHECK_ARG(obj != NULL, return false);
     LV_CHECK_ARG(style != NULL, return false);
 
@@ -721,6 +727,26 @@ void lv_obj_update_layer_type(lv_obj_t * obj)
             return;
         }
         obj->spec_attr->layer_type = layer_type;
+    }
+}
+
+void lv_obj_update_blur_status(lv_obj_t * obj)
+{
+    LV_ASSERT_NULL(obj);
+
+    /*Deletion releases the count itself (see obj_delete_core())*/
+    if(obj->is_deleting) return;
+
+    bool has_blur = calculate_has_blur(obj);
+    if(has_blur == (bool)obj->has_blur) return;
+
+    obj->has_blur = has_blur;
+    if(has_blur) {
+        LV_GLOBAL_DEFAULT()->blur_obj_cnt++;
+    }
+    else {
+        LV_ASSERT(LV_GLOBAL_DEFAULT()->blur_obj_cnt > 0);
+        LV_GLOBAL_DEFAULT()->blur_obj_cnt--;
     }
 }
 
@@ -1319,6 +1345,37 @@ static lv_layer_type_t calculate_layer_type(lv_obj_t * obj)
     return LV_LAYER_TYPE_NONE;
 }
 
+/*True if any style attached to the widget enables blur or a drop shadow in the
+ *widget's current state. The per-style has_group bitmask makes the common
+ *no-blur case a cheap scan.*/
+static bool calculate_has_blur(lv_obj_t * obj)
+{
+    const uint32_t group_blur = (uint32_t)1 << lv_style_get_prop_group(LV_STYLE_BLUR_RADIUS);
+    const uint32_t group_dropshadow = (uint32_t)1 << lv_style_get_prop_group(LV_STYLE_DROP_SHADOW_OPA);
+    const lv_state_t state = lv_obj_style_get_selector_state(lv_obj_get_state(obj));
+    const lv_state_t state_inv = ~state;
+    lv_style_value_t v;
+    uint32_t i;
+    for(i = 0; i < obj->style_cnt; i++) {
+        lv_obj_style_t * obj_style = &obj->styles[i];
+        if(obj_style->is_disabled) continue;
+
+        lv_state_t state_style = lv_obj_style_get_selector_state(obj->styles[i].selector);
+        if((state_style & state_inv)) continue;
+
+        if((obj_style->style->has_group & group_blur) &&
+           lv_style_get_prop(obj_style->style, LV_STYLE_BLUR_RADIUS, &v)) {
+            if(v.num > 0) return true;
+        }
+        if((obj_style->style->has_group & group_dropshadow) &&
+           lv_style_get_prop(obj_style->style, LV_STYLE_DROP_SHADOW_OPA, &v)) {
+            if(v.num > 0) return true;
+        }
+    }
+
+    return false;
+}
+
 static void full_cache_refresh(lv_obj_t * obj, lv_part_t part)
 {
 #if LV_OBJ_STYLE_CACHE
@@ -1569,7 +1626,7 @@ static void bind_style_observer_cb(lv_observer_t * observer, lv_subject_t * subj
 
     int32_t v = lv_subject_get_int(subject);
     bool en = (v == p->value);
-    lv_obj_style_set_enabled(observer->target, p->style, p->selector, en);
+    lv_obj_set_style_enabled(observer->target, p->style, p->selector, en);
 }
 
 static void bind_style_prop_observer_cb(lv_observer_t * observer, lv_subject_t * subject)
