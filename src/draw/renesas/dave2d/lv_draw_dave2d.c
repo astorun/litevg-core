@@ -376,7 +376,6 @@ static int32_t _dave2d_evaluate(lv_draw_unit_t * u, lv_draw_task_t * t)
 static int32_t lv_draw_dave2d_dispatch(lv_draw_unit_t * draw_unit, lv_layer_t * layer)
 {
     lv_draw_dave2d_unit_t * draw_dave2d_unit = (lv_draw_dave2d_unit_t *) draw_unit;
-    uint32_t deps = 0;
 
     if(draw_dave2d_unit->task_act) {
         /* Return immediately if it's busy with draw task */
@@ -407,7 +406,7 @@ static int32_t lv_draw_dave2d_dispatch(lv_draw_unit_t * draw_unit, lv_layer_t * 
 
     /*Disable the command buffer as a temporary fix to rendering issues. */
 #if 0
-    deps = lv_draw_get_dependent_count(t);
+    uint32_t deps = lv_draw_get_dependent_count(t);
     if(deps > 0 || draw_pressure > 0) {
         draw_pressure += deps;
         if(draw_pressure < LV_DAVE2D_MAX_DRAW_PRESSURE) {
@@ -464,7 +463,7 @@ static int32_t _dave2d_wait_finish(lv_draw_unit_t * draw_unit)
      * has been maxed out, defer the block of tasks to be rendered by the
      * Dave and wait for its interrupt. (Dave2D driver is RTOS aware, no need for semaphores);
      */
-    lv_draw_dave2d_unit_t * draw_dave2d_unit = (lv_draw_dave2d_unit_t *) draw_unit;
+    LV_UNUSED(draw_unit);
 
     if(!draw_pressure) {
         /* It reached here because Dave2D Draw Unit was not suitable to take a task
@@ -508,13 +507,13 @@ static void execute_drawing(lv_draw_dave2d_unit_t * u)
 
     switch(t->type) {
         case LV_DRAW_TASK_TYPE_FILL:
-            lv_draw_dave2d_fill(t, t->draw_dsc, &t->area);
+            lv_draw_dave2d_fill(t->draw_unit, t->target_layer, &t->clip_area, t->draw_dsc, &t->area);
             break;
         case LV_DRAW_TASK_TYPE_BORDER:
-            lv_draw_dave2d_border(t, t->draw_dsc, &t->area);
+            lv_draw_dave2d_border(t->draw_unit, t->target_layer, &t->clip_area, t->draw_dsc, &t->area);
             break;
         case LV_DRAW_TASK_TYPE_BOX_SHADOW:
-            //lv_draw_dave2d_box_shadow(t, t->draw_dsc, &t->area);
+            //lv_draw_dave2d_box_shadow(t->draw_unit, t->target_layer, &t->clip_area, t->draw_dsc, &t->area);
             break;
 #if 0
         case LV_DRAW_TASK_TYPE_BG_IMG:
@@ -522,25 +521,25 @@ static void execute_drawing(lv_draw_dave2d_unit_t * u)
             break;
 #endif
         case LV_DRAW_TASK_TYPE_LABEL:
-            lv_draw_dave2d_label(t, t->draw_dsc, &t->area);
+            lv_draw_dave2d_label(t->draw_unit, t->target_layer, &t->clip_area, t->draw_dsc, &t->area);
             break;
         case LV_DRAW_TASK_TYPE_IMAGE:
-            lv_draw_dave2d_image(t, t->draw_dsc, &t->area);
+            lv_draw_dave2d_image(t->draw_unit, t->target_layer, &t->clip_area, t->draw_dsc, &t->area);
             break;
         case LV_DRAW_TASK_TYPE_LINE:
-            lv_draw_line_iterate(t, t->draw_dsc, lv_draw_dave2d_line);
+            lv_draw_line_iterate(t->target_layer, &t->clip_area, t->draw_dsc, lv_draw_dave2d_line, t->draw_unit);
             break;
         case LV_DRAW_TASK_TYPE_ARC:
-            lv_draw_dave2d_arc(t, t->draw_dsc, &t->area);
+            lv_draw_dave2d_arc(t->draw_unit, t->target_layer, &t->clip_area, t->draw_dsc, &t->area);
             break;
         case LV_DRAW_TASK_TYPE_TRIANGLE:
-            lv_draw_dave2d_triangle(t, t->draw_dsc);
+            lv_draw_dave2d_triangle(t->draw_unit, t->target_layer, &t->clip_area, t->draw_dsc);
             break;
         case LV_DRAW_TASK_TYPE_LAYER:
-            //lv_draw_dave2d_layer(t, t->draw_dsc, &t->area);
+            //lv_draw_dave2d_layer(t->draw_unit, t->target_layer, &t->clip_area, t->draw_dsc, &t->area);
             break;
         case LV_DRAW_TASK_TYPE_MASK_RECTANGLE:
-            //lv_draw_dave2d_mask_rect(t, t->draw_dsc, &t->area);
+            //lv_draw_dave2d_mask_rect(t->draw_unit, t->target_layer, &t->clip_area, t->draw_dsc);
             break;
         default:
             break;
