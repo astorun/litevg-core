@@ -21,8 +21,6 @@
 
 #if LV_USE_DRAW_SW_ASM == LV_DRAW_SW_ASM_HELIUM
     #include "arm2d/lv_draw_sw_helium.h"
-#elif LV_USE_DRAW_SW_ASM == LV_DRAW_SW_ASM_CUSTOM
-    #include LV_DRAW_SW_ASM_CUSTOM_INCLUDE
 #endif
 
 /*********************
@@ -467,6 +465,10 @@ static void transform_and_recolor(lv_layer_t * layer, const lv_draw_image_dsc_t 
         transformed_buf = lv_malloc(buf_stride * buf_h);
     }
     LV_ASSERT_MALLOC(transformed_buf);
+    if(!transformed_buf) {
+        LV_LOG_WARN("failed to allocate buffer for transformation");
+        return;
+    }
 
     blend_dsc.src_buf = transformed_buf;
     blend_dsc.src_color_format = cf_final;
